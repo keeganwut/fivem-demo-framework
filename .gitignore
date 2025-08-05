@@ -1,0 +1,15 @@
+# CFX Files
+\[cfx\]
+
+# Cache Files
+/cache
+
+# Sensitive info
+*.cfg
+*.*.bkp
+
+# Visual Studio Extensions
+.replxx_history
+
+# Tools unrelated to demo
+/resources/\[tools\]

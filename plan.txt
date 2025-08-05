@@ -1,0 +1,18 @@
+I'll make a simple framework that handles mock character data as if it were a real server environment.
+We need to have a character selection (char-select),
+character creation (char-create)
+and a job or two do in-game when you select a character to accrue money for the session.
+
+char-select structure:
+- First screen you'll see on log-in and have a button where you can click to make a new/first character.
+- Fetch player's character(s) from char-create in a secure method.
+- Allow the player to select one of their characters to play or delete with a basic UI.
+- Spawn player after character is made.
+
+char-create structure:
+- Have basic information like: Require a first and last name. Allow optional info like a background for the player's personal use.
+- After character info is made send the player back to char-select with the updated list of characters.
+
+Basic Jobs:
+- After a character is made and the player selects to play one, spawn them near a hot dog stand where they can sell food to NPCs.
+- Allow the checking of player balance by going to an ATM. May or may not be a basic UI that just shows the amount.
