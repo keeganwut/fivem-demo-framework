@@ -21,6 +21,10 @@ body {
   transition: right 0.3s ease-in-out;
 }
 
+.character-menu.hidden {
+  display: none;
+}
+
 .menu-title {
   text-align: center;
   margin-top: 0;

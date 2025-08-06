@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let characters = [];
   let characterIdToDelete = null;
 
+  const characterMenu = document.getElementById('character-menu');
   const characterList = document.getElementById('character-list');
   const createCharBtn = document.getElementById('create-char-btn');
 
@@ -40,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (action === 'setupCharacters') {
       characters = data;
       renderCharacterList();
+
+      characterMenu.classList.remove('hidden');
     }
   });
 
@@ -79,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const selectCharacter = (characterId) => {
+    characterMenu.classList.add('hidden');
+
     nuiRequest('selectCharacter', { cid: characterId });
   };
 
@@ -104,7 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const promptDeleteCharacter = (characterId) => {
     characterIdToDelete = characterId;
     const charToDelete = characters.find((c) => c.cid === characterId);
-    deleteConfirmText.textContent = `Are you sure you want to delete ${charToDelete.name}?`;
+    deleteConfirmText.textContent = `Are you sure you want to delete ${
+      charToDelete.firstName + '' + charToDelete.lastName
+    }?`;
     deleteCharModal.classList.remove('hidden');
   };
 
