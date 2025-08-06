@@ -17,6 +17,10 @@ local function SetupClient(player, characters)
     TriggerClientEvent('char-select:client:SetupClient', player, characters)
 end
 
+local function SyncClient(player, characters)
+    TriggerClientEvent('char-select:client:SyncClient', player, characters)
+end
+
 AddEventHandler('playerJoining', function()
     local src = source
     Core.SetPlayerCharacters(src, mockdata) -- populate the "database" with data to test our API
@@ -42,7 +46,7 @@ RegisterNetEvent('char-select:server:DeleteCharacter', function(cid)
     if characters and characters[cid] then
         characters[cid] = nil
         Core.SetPlayerCharacters(src, characters)
-        SetupClient(src, Core.GetPlayerCharacters(src))
+        SyncClient(src, Core.GetPlayerCharacters(src))
     end
 end)
 
@@ -77,7 +81,7 @@ RegisterNetEvent('char-select:server:CreateCharacter', function(data)
         }
         characters[newCid] = newCharacter
         Core.SetPlayerCharacters(src, characters)
-        SetupClient(src, Core.GetPlayerCharacters(src))
+        SyncClient(src, Core.GetPlayerCharacters(src))
     end
 end)
 

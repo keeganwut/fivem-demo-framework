@@ -170,6 +170,21 @@ RegisterNetEvent('char-select:client:SetupClient', function(characters)
     SetupPlayer(characters)
 end)
 
+RegisterNetEvent('char-select:client:SyncClient', function(characters)
+    inMenu = true
+
+    DoScreenFadeOut(150)
+
+    Wait(150)
+
+    SendNUIMessage({ action = 'setupCharacters', data = characters })
+    SetupPeds(characters)
+
+    Wait(500)
+
+    DoScreenFadeIn(500)
+end)
+
 RegisterNUICallback('selectCharacter', function(data, cb)
     TriggerServerEvent('char-select:server:SelectCharacter', data.cid)
     CloseMenu()
