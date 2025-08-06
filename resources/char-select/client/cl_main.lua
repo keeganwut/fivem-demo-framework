@@ -38,6 +38,8 @@ local function CloseMenu()
     SetEntityVisible(playerPed, true)
     FreezeEntityPosition(playerPed, false)
     SetEntityInvincible(playerPed, false)
+
+    DisplayRadar(true)
     -- todo ... reroute player back to main bucket
 end
 
@@ -65,16 +67,6 @@ local function SetupCamera()
     RenderScriptCams(true, false, 0, true, false)
     SetCamAffectsAiming(selectCam, false)
     DoScreenFadeIn(500)
-end
-
-local function SetupPlayer()
-    local playerPed = PlayerPedId()
-    local menuCoords = vec3(-110.0162, -11.7297, 70.5197)
-    DisableControls()
-    SetEntityVisible(playerPed, false)
-    SetEntityCoords(playerPed, menuCoords)
-    FreezeEntityPosition(playerPed, true)
-    SetEntityInvincible(playerPed, true)
 end
 
 local function PlacePed(index)
@@ -130,17 +122,6 @@ local function PlacePed(index)
 end
 
 local function SetupPeds(characters)
-    for k, v in pairs(characters) do
-        PlacePed(k, v)
-    end
-end
-
-RegisterNetEvent('char-select:client:SetupClient', function(characters)
-    local playerPed = PlayerPedId()
-    inMenu = true
-    TriggerServerEvent('char-select:server:InstancePlayer', playerPed)
-    DoScreenFadeOut(0)
-
     if spawnedPeds then
         for _, ped in pairs(spawnedPeds) do
             DeleteEntity(ped)
@@ -148,12 +129,45 @@ RegisterNetEvent('char-select:client:SetupClient', function(characters)
         spawnedPeds = {}
     end
 
+    for k, _ in pairs(characters) do
+        PlacePed(k)
+    end
+end
+
+local function SetupPlayer(characters)
+    local playerPed = PlayerPedId()
+    local menuCoords = vec3(-110.0162, -11.7297, 70.5197)
+
+    DisableControls()
+    DisplayRadar(false)
+
+    SetEntityCoords(playerPed, menuCoords)
+    SetEntityInvincible(playerPed, true)
+    SetEntityVisible(playerPed, false)
+    FreezeEntityPosition(playerPed, true)
+
+    SetupPeds(characters)
+
+    Wait(1000)
+
     SetNuiFocus(true, true)
     SendNUIMessage({ action = 'setupCharacters', data = characters })
-    SetupPlayer()
-    SetupPeds(characters)
-    Wait(1500)
+
     SetupCamera()
+end
+
+RegisterNetEvent('char-select:client:SetupClient', function(characters)
+    local playerPed = PlayerPedId()
+    inMenu = true
+    TriggerServerEvent('char-select:server:InstancePlayer', playerPed)
+
+    DoScreenFadeOut(0) -- Gets overwritten by cfx's spawn manager which is out of scope of this repository
+
+    Wait(5000)
+
+    DoScreenFadeOut(0) -- CFX spawn manager now fucks off and allows for a fade out
+
+    SetupPlayer(characters)
 end)
 
 RegisterNUICallback('selectCharacter', function(data, cb)
@@ -172,4 +186,5 @@ RegisterNUICallback('createCharacter', function(data, cb)
     cb('ok')
 end)
 
-TriggerServerEvent('char-select:server:MimicJoin')
+exports.spawnmanager.setAutoSpawn(false) -- important fixes a bunch of issues
+-- TriggerServerEvent('char-select:server:MimicJoin') -- debug
