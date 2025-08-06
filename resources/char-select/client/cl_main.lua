@@ -1,22 +1,6 @@
 local inMenu = false
 
-local characters = {
-    [1] = {
-        firstName = 'John',
-        lastName = 'Doe',
-        gender = 'male'
-    },
-    [2] = {
-        firstName = 'Jane',
-        lastName = 'Doe',
-        gender = 'female'
-    },
-    [3] = {
-        firstName = 'Jane',
-        lastName = 'Doe',
-        gender = 'female'
-    }
-}
+-- local Core = exports['core']:FetchCore()
 
 local peds = {
     [1] = {
@@ -65,7 +49,7 @@ local function SetupCamera()
     RenderScriptCams(true, false, 0, true, false)
     SetCamAffectsAiming(selectCam, false)
 
-    DoScreenFadeOut(500)
+    DoScreenFadeIn(500)
 end
 
 local function SetupPlayer()
@@ -137,13 +121,13 @@ local function PlacePed(index)
     end)
 end
 
-local function SetupPeds()
+local function SetupPeds(characters)
     for k, _ in pairs(characters) do
         PlacePed(k)
     end
 end
 
-RegisterNetEvent('char-select:client:SetupClient', function()
+RegisterNetEvent('char-select:client:SetupClient', function(characters)
     local playerPed = PlayerPedId()
     inMenu = true
 
@@ -152,9 +136,11 @@ RegisterNetEvent('char-select:client:SetupClient', function()
     DoScreenFadeOut(0)
 
     SetupPlayer()
-    SetupPeds()
+    SetupPeds(characters)
 
     Wait(1500)
 
     SetupCamera()
 end)
+
+TriggerServerEvent('char-select:server:MimicJoin') -- Debug Event
