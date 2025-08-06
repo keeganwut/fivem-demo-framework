@@ -186,5 +186,5 @@ RegisterNUICallback('createCharacter', function(data, cb)
     cb('ok')
 end)
 
-exports.spawnmanager.setAutoSpawn(false) -- important fixes a bunch of issues
--- TriggerServerEvent('char-select:server:MimicJoin') -- debug
+exports.spawnmanager.setAutoSpawn(false)           -- important fixes a bunch of issues
+TriggerServerEvent('char-select:server:MimicJoin') -- debug

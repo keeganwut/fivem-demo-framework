@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     characterIdToDelete = characterId;
     const charToDelete = characters.find((c) => c.cid === characterId);
     deleteConfirmText.textContent = `Are you sure you want to delete ${
-      charToDelete.firstName + '' + charToDelete.lastName
+      charToDelete.firstName + ' ' + charToDelete.lastName
     }?`;
     deleteCharModal.classList.remove('hidden');
   };
