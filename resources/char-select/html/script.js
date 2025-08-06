@@ -18,13 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const nuiRequest = async (eventName, data = {}) => {
     try {
-      const response = await fetch(`https://char-select/${eventName}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `https://${GetParentResourceName()}/${eventName}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: JSON.stringify(data),
+        }
+      );
       return await response.json();
     } catch (error) {
       console.error(`NUI Request Failed: ${eventName}`, error);
