@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('message', (event) => {
     const { action, data } = event.data;
     if (action === 'setupCharacters') {
-      characters = data;
+      characters = data ? data.filter((char) => char !== null) : [];
       renderCharacterList();
 
       characterMenu.classList.remove('hidden');
@@ -56,28 +56,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     characters.forEach((char) => {
-      const entryDiv = document.createElement('div');
-      entryDiv.className = 'character-entry';
+      if (char !== null) {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'character-entry';
 
-      const charButton = document.createElement('button');
-      charButton.className = 'menu-btn character-btn';
-      charButton.textContent = char.firstName + ' ' + char.lastName;
-      charButton.dataset.characterId = char.cid;
+        const charButton = document.createElement('button');
+        charButton.className = 'menu-btn character-btn';
+        charButton.textContent = char.firstName + ' ' + char.lastName;
+        charButton.dataset.characterId = char.cid;
 
-      const deleteButton = document.createElement('button');
-      deleteButton.className = 'menu-btn delete-btn';
-      deleteButton.innerHTML = '&times;';
-      deleteButton.dataset.characterId = char.cid;
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'menu-btn delete-btn';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.dataset.characterId = char.cid;
 
-      charButton.addEventListener('click', () => selectCharacter(char.cid));
-      deleteButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        promptDeleteCharacter(char.cid);
-      });
+        charButton.addEventListener('click', () => selectCharacter(char.cid));
+        deleteButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+          promptDeleteCharacter(char.cid);
+        });
 
-      entryDiv.appendChild(charButton);
-      entryDiv.appendChild(deleteButton);
-      characterList.appendChild(entryDiv);
+        entryDiv.appendChild(charButton);
+        entryDiv.appendChild(deleteButton);
+        characterList.appendChild(entryDiv);
+      }
     });
   };
 
@@ -108,17 +110,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const promptDeleteCharacter = (characterId) => {
     characterIdToDelete = characterId;
-    const charToDelete = characters.find((c) => c.cid === characterId);
-    deleteConfirmText.textContent = `Are you sure you want to delete ${
-      charToDelete.firstName + ' ' + charToDelete.lastName
-    }?`;
-    deleteCharModal.classList.remove('hidden');
+    const charToDelete = characters.find((c) => c && c.cid === characterId);
+
+    if (charToDelete) {
+      deleteConfirmText.textContent = `Are you sure you want to delete ${
+        charToDelete.firstName + ' ' + charToDelete.lastName
+      }?`;
+      deleteCharModal.classList.remove('hidden');
+    } else {
+      console.error(`Character with ID ${characterId} not found.`);
+    }
   };
 
   const executeDeleteCharacter = () => {
     if (characterIdToDelete !== null) {
       nuiRequest('deleteCharacter', { cid: characterIdToDelete });
-      characters = characters.filter((c) => c.cid !== characterIdToDelete);
+      characters = characters.filter((c) => c && c.cid !== characterIdToDelete);
       renderCharacterList();
       characterIdToDelete = null;
       deleteCharModal.classList.add('hidden');

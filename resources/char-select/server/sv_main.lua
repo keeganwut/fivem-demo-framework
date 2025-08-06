@@ -23,7 +23,7 @@ end
 
 AddEventHandler('playerJoining', function()
     local src = source
-    Core.SetPlayerCharacters(src, mockdata) -- populate the "database" with data to test our API
+    Core.SetPlayerCharacters(src, mockdata)         -- populate the "database" with data to test our API
     Wait(1000)
     SetupClient(src, Core.GetPlayerCharacters(src)) -- prep client menu
 end)
@@ -46,6 +46,9 @@ RegisterNetEvent('char-select:server:DeleteCharacter', function(cid)
     if characters and characters[cid] then
         characters[cid] = nil
         Core.SetPlayerCharacters(src, characters)
+
+        Wait(500)
+
         SyncClient(src, Core.GetPlayerCharacters(src))
     end
 end)
@@ -81,13 +84,18 @@ RegisterNetEvent('char-select:server:CreateCharacter', function(data)
         }
         characters[newCid] = newCharacter
         Core.SetPlayerCharacters(src, characters)
+
+        Wait(500)
+
         SyncClient(src, Core.GetPlayerCharacters(src))
     end
 end)
 
 RegisterNetEvent('char-select:server:MimicJoin', function() -- Debug event
     local src = source
-    Core.SetPlayerCharacters(src, mockdata) -- populate the "database" with data to test our API
-    Wait(1000)
+    Core.SetPlayerCharacters(src, mockdata)                 -- populate the "database" with data to test our API
+
+    Wait(500)
+
     SetupClient(src, Core.GetPlayerCharacters(src)) -- prep client menu
 end)
