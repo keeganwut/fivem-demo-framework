@@ -1,0 +1,160 @@
+local inMenu = false
+
+local characters = {
+    [1] = {
+        firstName = 'John',
+        lastName = 'Doe',
+        gender = 'male'
+    },
+    [2] = {
+        firstName = 'Jane',
+        lastName = 'Doe',
+        gender = 'female'
+    },
+    [3] = {
+        firstName = 'Jane',
+        lastName = 'Doe',
+        gender = 'female'
+    }
+}
+
+local peds = {
+    [1] = {
+        model = 'mp_m_boatstaff_01',
+        animDict = 'timetable@reunited@ig_10',
+        animName = 'isthisthebest_amanda',
+        coords = vec4(-113.2123, -9.9648, 69.4195, 159.5774)
+    },
+    [2] = {
+        model = 'a_m_m_skater_01',
+        animDict = 'timetable@maid@couch@',
+        animName = 'base',
+        coords = vec4(-112.3501, -10.3675, 69.6196, 160.8868)
+    },
+    [3] = {
+        model = 'g_f_y_vagos_01',
+        animDict = 'missheist_agency3aleadinout_mcs_1',
+        animName = 'sit',
+        coords = vec4(-111.3365, -9.9284, 69.0195, 149.6640)
+    }
+}
+
+local function DisableControls()
+    CreateThread(function()
+        while inMenu do
+            DisableAllControlActions(0)
+
+            Wait(1)
+        end
+    end)
+end
+
+local function SetupCamera()
+    local camCoords = vec3(-113.7932, -12.1997, 70.5197)
+
+    ClearFocus()
+    local selectCam = CreateCamWithParams(
+        'DEFAULT_SCRIPTED_CAMERA',
+        camCoords,
+        0.0,
+        0.0,
+        -50.0,
+        GetGameplayCamFov() * 1.25
+    )
+    SetCamActive(selectCam, true)
+    RenderScriptCams(true, false, 0, true, false)
+    SetCamAffectsAiming(selectCam, false)
+
+    DoScreenFadeOut(500)
+end
+
+local function SetupPlayer()
+    local playerPed = PlayerPedId()
+    local menuCoords = vec3(-110.0162, -11.7297, 70.5197)
+
+    DisableControls()
+
+    SetEntityVisible(playerPed, false)
+    SetEntityCoords(playerPed, menuCoords)
+    FreezeEntityPosition(playerPed, true)
+    SetEntityInvincible(playerPed, true)
+end
+
+local function PlacePed(index)
+    CreateThread(function()
+        local pedModel = peds[index].model
+        local pedCoords = peds[index].coords
+        local pedAnimDict = peds[index].animDict
+        local pedAnimName = peds[index].animName
+
+        RequestModel(pedModel)
+        while not HasModelLoaded(pedModel) do
+            Wait(0)
+        end
+
+        local createdPed = CreatePed(
+            0,
+            GetHashKey(pedModel),
+            pedCoords.x,
+            pedCoords.y,
+            pedCoords.z,
+            pedCoords.w,
+            false,
+            false
+        )
+
+        SetEntityVisible(createdPed, false)
+        FreezeEntityPosition(createdPed, true)
+        SetEntityInvincible(createdPed, true)
+
+        SetPedConfigFlag(
+            createdPed,
+            294,
+            true
+        )
+
+        RequestAnimDict(pedAnimDict)
+        while not HasAnimDictLoaded(pedAnimDict)
+        do
+            Wait(0)
+        end
+
+        TaskPlayAnim(
+            createdPed,
+            pedAnimDict,
+            pedAnimName,
+            8.0,
+            8.0,
+            -1,
+            1
+        )
+
+        Wait(500)
+
+        SetEntityVisible(createdPed, true)
+
+        SetModelAsNoLongerNeeded(pedModel)
+    end)
+end
+
+local function SetupPeds()
+    for k, _ in pairs(characters) do
+        PlacePed(k)
+    end
+end
+
+RegisterNetEvent('char-select:client:SetupClient', function()
+    local playerPed = PlayerPedId()
+    inMenu = true
+
+    TriggerServerEvent('char-select:server:InstancePlayer', playerPed)
+
+    DoScreenFadeOut(0)
+
+    SetupPlayer()
+    SetupPeds()
+
+    Wait(1500)
+
+    SetupCamera()
+end)
