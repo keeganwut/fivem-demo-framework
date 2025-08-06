@@ -15,10 +15,23 @@
       </div>
     </div>
 
-    <div id="create-char-modal" class="modal-overlay hidden">
+    <div id="ped-select-modal" class="modal-overlay hidden">
       <div class="modal">
-        <h3>Create a New Character</h3>
-        <form id="create-char-form">
+        <h3>Select Appearance</h3>
+        <div id="ped-grid" class="ped-grid"></div>
+        <div class="modal-actions">
+          <button id="next-btn" class="modal-btn confirm-btn">Next</button>
+          <button id="cancel-ped-select-btn" class="modal-btn cancel-btn">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="char-name-modal" class="modal-overlay hidden">
+      <div class="modal">
+        <h3>Name Your Character</h3>
+        <form id="name-char-form">
           <input
             type="text"
             id="first-name-input"
@@ -35,7 +48,7 @@
             <button type="submit" class="modal-btn confirm-btn">Create</button>
             <button
               type="button"
-              id="cancel-create-btn"
+              id="cancel-name-btn"
               class="modal-btn cancel-btn"
             >
               Cancel

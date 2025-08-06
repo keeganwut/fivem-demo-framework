@@ -1,14 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
   let characters = [];
   let characterIdToDelete = null;
+  let selectedPedModel = null;
+
+  const availablePeds = [
+    'a_m_m_afriamer_01',
+    'a_m_m_beach_01',
+    'a_m_m_bevhills_01',
+    'a_m_y_skater_01',
+    'a_f_m_bevhills_01',
+    'a_f_m_fatwhite_01',
+    'ig_denise',
+    'cs_amandatownley',
+    's_m_m_movprem_01',
+    's_m_m_strvend_01',
+  ];
 
   const characterMenu = document.getElementById('character-menu');
   const characterList = document.getElementById('character-list');
-  const createCharBtn = document.getElementById('create-char-btn');
 
-  const createCharModal = document.getElementById('create-char-modal');
-  const createCharForm = document.getElementById('create-char-form');
-  const cancelCreateBtn = document.getElementById('cancel-create-btn');
+  const pedSelectModal = document.getElementById('ped-select-modal');
+  const cancelSelectBtn = document.getElementById('cancel-ped-select-btn');
+  const pedGrid = document.getElementById('ped-grid');
+
+  const charNameModal = document.getElementById('char-name-modal');
+  const nameCharForm = document.getElementById('name-char-form');
+  const cancelCreateBtn = document.getElementById('cancel-name-btn');
   const firstNameInput = document.getElementById('first-name-input');
   const lastNameInput = document.getElementById('last-name-input');
 
@@ -16,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const deleteConfirmText = document.getElementById('delete-confirm-text');
   const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
   const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+  const createCharBtn = document.getElementById('create-char-btn');
+  const confirmPedBtn = document.getElementById('next-btn');
 
   const nuiRequest = async (eventName, data = {}) => {
     try {
@@ -83,14 +102,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  const populatePedGrid = () => {
+    pedGrid.innerHTML = '';
+    availablePeds.forEach((model) => {
+      const pedItem = document.createElement('div');
+      pedItem.className = 'ped-item';
+      pedItem.dataset.model = model;
+      const pedImage = document.createElement('img');
+      pedImage.src = `images/${model}.png`;
+      pedImage.onerror = () => {
+        pedImage.src = 'images/default.png';
+      };
+      pedItem.appendChild(pedImage);
+
+      pedItem.addEventListener('click', () => {
+        const currentlySelected = pedGrid.querySelector('.selected');
+        if (currentlySelected) {
+          currentlySelected.classList.remove('selected');
+        }
+        pedItem.classList.add('selected');
+        selectedPedModel = model;
+      });
+      pedGrid.appendChild(pedItem);
+    });
+  };
+
   const selectCharacter = (characterId) => {
     characterMenu.classList.add('hidden');
 
     nuiRequest('selectCharacter', { cid: characterId });
   };
 
+  const promptNameCharacter = () => {
+    if (selectedPedModel !== null) {
+      pedSelectModal.classList.add('hidden');
+      charNameModal.classList.remove('hidden');
+    }
+  };
+
   const promptCreateCharacter = () => {
-    createCharModal.classList.remove('hidden');
+    selectedPedModel = null;
+    populatePedGrid();
+    pedSelectModal.classList.remove('hidden');
   };
 
   const handleCreateCharacter = (event) => {
@@ -102,9 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
       nuiRequest('createCharacter', {
         firstname: firstName,
         lastname: lastName,
+        model: selectedPedModel,
       });
-      createCharForm.reset();
-      createCharModal.classList.add('hidden');
+      nameCharForm.reset();
+      charNameModal.classList.add('hidden');
+      selectedPedModel = null;
     }
   };
 
@@ -133,10 +188,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   createCharBtn.addEventListener('click', promptCreateCharacter);
-  createCharForm.addEventListener('submit', handleCreateCharacter);
+  confirmPedBtn.addEventListener('click', promptNameCharacter);
+  nameCharForm.addEventListener('submit', handleCreateCharacter);
   cancelCreateBtn.addEventListener('click', () => {
-    createCharForm.reset();
-    createCharModal.classList.add('hidden');
+    nameCharForm.reset();
+    charNameModal.classList.add('hidden');
+  });
+  cancelSelectBtn.addEventListener('click', () => {
+    pedSelectModal.classList.add('hidden');
   });
 
   confirmDeleteBtn.addEventListener('click', executeDeleteCharacter);

@@ -4,12 +4,14 @@ local mockdata = {
     [1] = {
         cid = 1,
         firstName = 'John',
-        lastName = 'Doe'
+        lastName = 'Doe',
+        model = 'mp_m_boatstaff_01'
     },
     [2] = {
         cid = 2,
         firstName = 'Jane',
-        lastName = 'Doe'
+        lastName = 'Doe',
+        model = 'a_m_m_skater_01'
     }
 }
 
@@ -80,7 +82,8 @@ RegisterNetEvent('char-select:server:CreateCharacter', function(data)
         local newCharacter = {
             cid = newCid,
             firstName = data.firstname,
-            lastName = data.lastname
+            lastName = data.lastname,
+            model = data.model
         }
         characters[newCid] = newCharacter
         Core.SetPlayerCharacters(src, characters)
